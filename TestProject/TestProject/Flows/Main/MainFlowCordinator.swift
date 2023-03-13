@@ -5,6 +5,8 @@ final class MainFlowCoordinator: BaseCoordinator {
     private let navigationController: UINavigationController
     private let window: UIWindow
 
+    private var activeFlowCoordinator: BaseCoordinator?
+
     init(
         window: UIWindow,
         navigationController: UINavigationController
@@ -20,7 +22,9 @@ final class MainFlowCoordinator: BaseCoordinator {
             window.makeKeyAndVisible()
         }
 
-        let coordinator = SignInCoordinator(navigationController: navigationController)
+        let coordinator = AuthCoordinator(navigationController: navigationController)
+        addDependency(coordinator)
+        activeFlowCoordinator = coordinator
         coordinator.start()
     }
 }
