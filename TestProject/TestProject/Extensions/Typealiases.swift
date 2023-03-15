@@ -1,0 +1,1 @@
+typealias VoidHandler = () -> Void
