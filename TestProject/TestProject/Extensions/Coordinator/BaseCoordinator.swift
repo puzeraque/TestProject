@@ -1,5 +1,4 @@
 import UIKit
-// Abstract coordinator class
 
 class BaseCoordinator: NSObject, Coordinator {
     var childCoordinators: [Coordinator] = []
@@ -42,31 +41,4 @@ class BaseCoordinator: NSObject, Coordinator {
     }
 
     override init() { }
-}
-
-extension BaseCoordinator {
-    func deepContains<C: BaseCoordinator>(child _: C.Type) -> Bool {
-        guard childCoordinators.isNotEmpty,
-              type(of: self) != C.self  else {
-            return type(of: self) == C.self
-        }
-
-        var isContains = false
-
-        for coordinator in childCoordinators {
-            guard (coordinator as? BaseCoordinator)?.deepContains(child: C.self) == true else { continue }
-            isContains = true
-            break
-        }
-
-        return isContains
-    }
-
-    func contains<C: Coordinator>(child _: C.Type) -> Bool {
-        return childCoordinators.contains(where: { type(of: $0) == C.self })
-    }
-
-    func child<C: Coordinator>(ofType _: C.Type) -> C? {
-        return childCoordinators.first(where: { type(of: $0) == C.self }) as? C
-    }
 }
