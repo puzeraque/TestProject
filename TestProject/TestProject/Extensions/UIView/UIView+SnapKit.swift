@@ -35,7 +35,7 @@ extension UIView {
         }
     }
 
-    func addAndEdgesSuperview(_ view: UIView) {
+    func addAndEdges(_ view: UIView) {
         addSubview(view)
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -76,9 +76,29 @@ extension UIView {
         }
     }
 
+    func addAndEdgesViewWithSafeAreaInsets(
+        _ view: UIView,
+        hInset: CGFloat = .zero,
+        vInset: CGFloat = .zero
+    ) {
+        self.addSubview(view)
+        view.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(vInset)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(vInset)
+            make.leading.trailing.equalToSuperview().inset(hInset)
+        }
+    }
+
+    func putInCenter(_ view: UIView) {
+        self.addSubview(view)
+
+        view.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
 
     func size(_ size: CGSize) {
-        snp.makeConstraints { make in
+        snp.remakeConstraints { make in
             make.size.equalTo(size)
         }
     }

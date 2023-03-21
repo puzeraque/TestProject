@@ -1,54 +1,28 @@
 import UIKit
 import SnapKit
 
+protocol SignInViewControllerInterface {
+    func handle(_ action: SignInViewController.Action)
+}
 final class SignInViewController: UIViewController {
 
-    private let mainStackView: UIStackView = {
-        $0.axis = .vertical
-        $0.spacing = 36
-        return $0
-    }(UIStackView())
-
-    private let signInLabel: UILabel = {
-        $0.text = "Sign In"
-        $0.font = Fonts.h1
-        $0.textColor = Color.Text.primary
-        $0.textAlignment = .center
-        return $0
-    }(UILabel())
-
-    private lazy var firstNameTextFieldContainer: BaseTextViewContainer = {
-        $0.textField.placeholder("First Name")
-        $0.textField.delegate = self
-        return $0
-    }(BaseTextViewContainer())
-    private lazy var secondNameTextFieldContainer: BaseTextViewContainer = {
-        $0.textField.placeholder("Second Name")
-        $0.textField.delegate = self
-        return $0
-    }(BaseTextViewContainer())
-    private lazy var mailTextFieldContainer: BaseTextViewContainer = {
-        $0.textField.placeholder("Email")
-        $0.textField.delegate = self
-        return $0
-    }(BaseTextViewContainer())
-
-    private let signInButton: BaseButton = {
-        $0.setTitle("Sign In", for: .normal)
-        $0.setTitleColor(Color.Text.primaryButton, for: .normal)
-        $0.titleLabel?.font = Fonts.title
-        $0.backgroundColor = Color.Button.main
-        $0.layer.cornerRadius = 16
-        return $0
-    }(BaseButton())
-
-    private let logInTextLabel: UILabel = {
-        $0.text = "Already have an account?"
-        $0.font = Fonts.caption1
-        $0.textColor = Color.Text.secondary
-        $0.textAlignment = .left
-        return $0
-    }(UILabel())
+    private let mainStackView = StackView(axis: .vertical, spacing: 36)
+    private let signInLabel = Label(
+        text: "Sign In",
+        font: Fonts.h1,
+        textColor: Color.Text.primary,
+        textAlignment: .center
+    )
+    private let firstNameTextFieldContainer = BaseTextFieldContainer(placeholder: "First Name")
+    private let secondNameTextFieldContainer = BaseTextFieldContainer(placeholder: "Second Name")
+    private let mailTextFieldContainer = BaseTextFieldContainer(placeholder: "Email")
+    private let signInButton = MainButton(title: "Sign In")
+    private let logInTextLabel = Label(
+        text: "Already have an account?",
+        font: Fonts.caption1,
+        textColor: Color.Text.secondary,
+        textAlignment: .left
+    )
     private let logInButton: BaseButton = {
         $0.setTitle("Log in", for: .normal)
         $0.setTitleColor(Color.Button.main, for: .normal)
@@ -56,21 +30,33 @@ final class SignInViewController: UIViewController {
         return $0
     }(BaseButton())
 
-    private let socialStackViewContainer = UIView()
-    private let socialStackView: UIStackView = {
-        $0.spacing = 20
-        $0.axis = .vertical
-        return $0
-    }(UIStackView())
+    private let socialStackViewContainer = BaseView()
+    private let socialStackView = StackView(axis: .vertical, spacing: 20)
     private let googleButton = SocialNetworkButton()
     private let appleButton = SocialNetworkButton()
 
     var onLoginTapped: VoidHandler?
+    var onSignInTapped: VoidHandler?
+
+    private let viewModel: SignInViewModelInterface
+
+    init(viewModel: SignInViewModelInterface) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.removeBackButtonTitle()
-        backgroundColor(Color.Background.main)
+        view.backgroundColor(Color.Background.main)
 
         mainStackView.addArrangedSubviews(
             signInLabel,
@@ -81,10 +67,8 @@ final class SignInViewController: UIViewController {
         )
         mainStackView.setCustomSpacing(84, after: signInLabel)
 
-        let logInStackView = UIStackView()
-        logInStackView.axis = .horizontal
+        let logInStackView = StackView(axis: .horizontal, spacing: 6)
         logInStackView.addArrangedSubviews(logInTextLabel, logInButton, UIView())
-        logInStackView.spacing = 6
         mainStackView.setCustomSpacing(40, after: logInStackView)
 
         mainStackView.addArrangedSubview(logInStackView)
@@ -104,6 +88,34 @@ final class SignInViewController: UIViewController {
 
         logInButton.onTap { [weak self] in
             self?.onLoginTapped?()
+        }
+        signInButton.setCornerRadius(16)
+        signInButton.onTap { [weak self] in
+            guard let self = self else { return }
+            let model = ProfileModel(
+                firstName: self.firstNameTextFieldContainer.text.orEmpty,
+                secondName: self.secondNameTextFieldContainer.text.orEmpty,
+                email: self.mailTextFieldContainer.text.orEmpty
+            )
+            self.viewModel.handle(.saveAccount(model))
+        }
+
+        googleButton.onTap {
+            AlertService.center.show(.base(title: "Google Auth"))
+        }
+
+        appleButton.onTap {
+            AlertService.center.show(.base(title: "Apple Auth"))
+        }
+
+        firstNameTextFieldContainer.onShouldReturn = { [weak self] in
+            self?.secondNameTextFieldContainer.becomeFirstResponder()
+        }
+        secondNameTextFieldContainer.onShouldReturn = { [weak self] in
+            self?.mailTextFieldContainer.becomeFirstResponder()
+        }
+        mailTextFieldContainer.onShouldReturn = { [weak self] in
+            self?.mailTextFieldContainer.resignFirstResponder()
         }
     }
 
@@ -149,7 +161,7 @@ final class SignInViewController: UIViewController {
 
     @objc private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
+            if self.view.frame.origin.y == .zero {
                 let value = keyboardSize.minY - self.signInButton.frame.maxY
                 view.frame.origin.y -= value
             }
@@ -157,24 +169,40 @@ final class SignInViewController: UIViewController {
     }
 
     @objc private func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
+        if self.view.frame.origin.y != .zero {
+            self.view.frame.origin.y = .zero
         }
     }
 }
 
-extension SignInViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+extension SignInViewController: SignInViewControllerInterface {
+    enum Error {
+        case validationError
+        case emptyFields
+        case accountExist
+
+        var title: String {
+            switch self {
+            case .validationError:
+                return "Email is not valid"
+            case .emptyFields:
+                return "Empty fields"
+            case .accountExist:
+                return "Account with this email exists"
+            }
+        }
+    }
+    enum Action {
+        case authSuccess
+        case error(SignInViewController.Error)
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == firstNameTextFieldContainer.textField {
-            secondNameTextFieldContainer.textField.becomeFirstResponder()
-        } else if textField == secondNameTextFieldContainer.textField {
-            mailTextFieldContainer.textField.becomeFirstResponder()
-        } else {
-            textField.resignFirstResponder()
+    func handle(_ action: Action) {
+        switch action {
+        case .authSuccess:
+            onSignInTapped?()
+        case .error(let error):
+            AlertService.center.show(.error(title: error.title))
         }
-        return false
     }
 }

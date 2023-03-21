@@ -1,52 +1,48 @@
 import UIKit
 import SnapKit
 
+protocol LoginViewControllerInterface {
+    func handle(_ action: LoginViewController.Action)
+}
+
 final class LoginViewController: UIViewController {
 
-    private let mainStackView: UIStackView = {
-        $0.axis = .vertical
-        $0.spacing = 36
+    private let mainStackView = StackView(axis: .vertical, spacing: 36)
+    private let signInLabel = Label(
+        text: "Welcome back",
+        font: Fonts.h1,
+        textColor: Color.Text.primary,
+        textAlignment: .center
+    )
+    private let mailTextFieldContainer = BaseTextFieldContainer(placeholder: "Email")
+    private lazy var passwordTextFieldContainer: BaseTextFieldContainer = {
+        $0.setupSecureView()
         return $0
-    }(UIStackView())
+    }(BaseTextFieldContainer(placeholder: "Password"))
 
-    private let signInLabel: UILabel = {
-        $0.text = "Welcome back"
-        $0.font = Fonts.h1
-        $0.textColor = Color.Text.primary
-        $0.textAlignment = .center
-        return $0
-    }(UILabel())
+    private let loginButton = MainButton(title: "Login")
 
-    private lazy var firstNameTextFieldContainer: BaseTextViewContainer = {
-        $0.textField.placeholder("First Name")
-        $0.textField.delegate = self
-        return $0
-    }(BaseTextViewContainer())
-    private lazy var passwordTextFieldContainer: BaseTextViewContainer = {
-        $0.textField.placeholder("Password")
-        $0.textField.isSecureTextEntry = true
-        $0.textField.delegate = self
-        return $0
-    }(BaseTextViewContainer())
+    var onLoginTapped: VoidHandler?
 
-    private let loginButton: BaseButton = {
-        $0.setTitle("Login", for: .normal)
-        $0.setTitleColor(Color.Text.primaryButton, for: .normal)
-        $0.titleLabel?.font = Fonts.title
-        $0.backgroundColor = Color.Button.main
-        $0.layer.cornerRadius = 16
-        return $0
-    }(BaseButton())
+    private let viewModel: LoginViewModelInterface
+
+    init(viewModel: LoginViewModelInterface) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.setupWhiteNavigationAppearance(backgroundColor: Color.Background.main)
-        navigationController?.removeBackButtonTitle()
-        backgroundColor(Color.Background.main)
-
+        navigationController?.setupNavigationAppearance()
+        view.backgroundColor(Color.Background.main)
+        
         mainStackView.addArrangedSubviews(
             signInLabel,
-            firstNameTextFieldContainer,
+            mailTextFieldContainer,
             passwordTextFieldContainer,
             loginButton
         )
@@ -57,18 +53,29 @@ final class LoginViewController: UIViewController {
 
         setupLayout()
         setupListeners()
+
+        loginButton.setCornerRadius(16)
+        loginButton.height(48)
+        loginButton.onTap { [weak self] in
+            self?.viewModel.handle(.login(self?.mailTextFieldContainer.text))
+        }
+
+        mailTextFieldContainer.onShouldReturn = { [weak self] in
+            self?.passwordTextFieldContainer.becomeFirstResponder()
+        }
+        passwordTextFieldContainer.onShouldReturn = { [weak self] in
+            self?.passwordTextFieldContainer.resignFirstResponder()
+        }
     }
 
     private func setupLayout() {
-        loginButton.height(48)
-
         mainStackView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(40)
         }
 
         [
-            firstNameTextFieldContainer,
+            mailTextFieldContainer,
             passwordTextFieldContainer
         ].forEach {
             $0.height(32)
@@ -94,7 +101,7 @@ final class LoginViewController: UIViewController {
 
     @objc private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
+            if self.view.frame.origin.y == .zero {
                 let value = keyboardSize.minY - self.loginButton.frame.maxY
                 view.frame.origin.y -= value
             }
@@ -102,22 +109,41 @@ final class LoginViewController: UIViewController {
     }
 
     @objc private func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
+        if self.view.frame.origin.y != .zero {
+            self.view.frame.origin.y = .zero
         }
     }
 }
 
-extension LoginViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+extension LoginViewController: LoginViewControllerInterface {
+    enum Error {
+        case accountDoestExist
+        case emailDoestMatch
+        case validationError
+
+        var title: String {
+            switch self {
+            case .accountDoestExist:
+                return "Account doest exist"
+            case .emailDoestMatch:
+                return "Email doest match"
+            case .validationError:
+                return "Email is not valid"
+            }
+        }
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == firstNameTextFieldContainer.textField {
-            passwordTextFieldContainer.textField.becomeFirstResponder()
-        } else {
-            textField.resignFirstResponder()
+    enum Action {
+        case error(LoginViewController.Error)
+        case success
+    }
+
+    func handle(_ action: Action) {
+        switch action {
+        case .error(let error):
+            AlertService.center.show(.error(title: error.title))
+        case .success:
+            onLoginTapped?()
         }
-        return false
     }
 }
