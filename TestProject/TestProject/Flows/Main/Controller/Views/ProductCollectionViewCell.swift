@@ -23,9 +23,8 @@ final class ProductCollectionViewCell: BaseCollectionViewCell {
     )
     private let typeContainerView: BaseView = {
         $0.isHidden = true
-        $0.backgroundColor(Color.TabBar.background.withAlphaComponent(0.7))
         return $0
-    }(BaseView())
+    }(BaseView(backgroundColor: Color.TabBar.background.withAlphaComponent(0.7)))
     private let typeLabel = Label(
         font: Fonts.caption2Bold,
         textColor: Color.Text.primary,
@@ -38,9 +37,8 @@ final class ProductCollectionViewCell: BaseCollectionViewCell {
     )
     private let saleContainerView: BaseView = {
         $0.isHidden = true
-        $0.backgroundColor(Color.Main.sale)
         return $0
-    }(BaseView())
+    }(BaseView(backgroundColor: Color.Main.sale))
     private let saleLabel = Label(
         font: Fonts.caption2Bold,
         textColor: Color.Text.primaryButton,

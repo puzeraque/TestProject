@@ -9,7 +9,7 @@ fileprivate enum Constant {
     static let bottomViewHeight: CGFloat = 162
 }
 
-final class ProductDetailsViewController: UIViewController {
+final class ProductDetailsViewController: BaseViewController {
     private let imageView: UIImageView = {
         $0.contentMode = .scaleAspectFill
         $0.backgroundColor = .red
@@ -81,8 +81,8 @@ final class ProductDetailsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setup() {
+        super.setup()
         view.backgroundColor(Color.Background.main)
         navigationController?.setupNavigationAppearance(backgroundColor: .clear)
 
@@ -109,6 +109,9 @@ final class ProductDetailsViewController: UIViewController {
         let imageViewStackView = StackView(axis: .horizontal)
         imageViewStackView.addArrangedSubviews(imageView, UIView())
 
+        imageView.isSkeletonable = true
+        imageView.showSkeletonWithAnimation()
+
         let containerBackView = BaseView()
         let containerStackView = StackView(axis: .vertical, spacing: 10)
 
@@ -131,17 +134,11 @@ final class ProductDetailsViewController: UIViewController {
         mainScrollView.addAndEdges(infoStackView)
         view.addSubviews(mainScrollView, actionsView, bottomView)
 
-        setupLayout()
-
-        imageView.isSkeletonable = true
-        imageView.showSkeletonWithAnimation()
-
-        photoPickerView.onImageSelected = { [weak self] image in
-            self?.imageView.image = image
-        }
+        setupHandlers()
     }
 
-    private func setupLayout() {
+    override func setupLayout() {
+        super.setupLayout()
         imageView.snp.makeConstraints { make in
             make.width.equalToSuperview().multipliedBy(0.8)
             make.height.equalTo(view).multipliedBy(0.3)
@@ -170,7 +167,13 @@ final class ProductDetailsViewController: UIViewController {
         }
     }
 
-    func setImages(urls: [URL?]) {
+    func setupHandlers() {
+        photoPickerView.onImageSelected = { [weak self] image in
+            self?.imageView.image = image
+        }
+    }
+
+    private func setImages(urls: [URL?]) {
         DispatchQueue.main.async { [weak self] in
             let datas = urls.compactMap { url -> Data? in
                 guard
@@ -185,8 +188,6 @@ final class ProductDetailsViewController: UIViewController {
             }
             self?.photoPickerView.configure(with: datas)
         }
-
-
     }
 }
 

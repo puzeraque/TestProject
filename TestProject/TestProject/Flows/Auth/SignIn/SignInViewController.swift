@@ -4,7 +4,7 @@ import SnapKit
 protocol SignInViewControllerInterface {
     func handle(_ action: SignInViewController.Action)
 }
-final class SignInViewController: UIViewController {
+final class SignInViewController: BaseViewController {
 
     private let mainStackView = StackView(axis: .vertical, spacing: 36)
     private let signInLabel = Label(
@@ -54,8 +54,8 @@ final class SignInViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setup() {
+        super.setup()
         view.backgroundColor(Color.Background.main)
 
         mainStackView.addArrangedSubviews(
@@ -80,16 +80,42 @@ final class SignInViewController: UIViewController {
         mainStackView.addArrangedSubview(socialStackViewContainer)
         googleButton.configure(with: .google)
         appleButton.configure(with: .apple)
-        
+
         view.addSubview(mainStackView)
 
-        setupLayout()
-        setupListeners()
+        signInButton.setCornerRadius(16)
 
+        setupHandlers()
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+        logInButton.height(12)
+        signInButton.height(48)
+
+        mainStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(40)
+        }
+
+        [
+            firstNameTextFieldContainer,
+            secondNameTextFieldContainer,
+            mailTextFieldContainer
+        ].forEach {
+            $0.height(32)
+        }
+
+        socialStackView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
+        }
+    }
+
+    private func setupHandlers() {
         logInButton.onTap { [weak self] in
             self?.onLoginTapped?()
         }
-        signInButton.setCornerRadius(16)
         signInButton.onTap { [weak self] in
             guard let self = self else { return }
             let model = ProfileModel(
@@ -117,61 +143,27 @@ final class SignInViewController: UIViewController {
         mailTextFieldContainer.onShouldReturn = { [weak self] in
             self?.mailTextFieldContainer.resignFirstResponder()
         }
-    }
 
-    private func setupLayout() {
-        logInButton.height(12)
-        signInButton.height(48)
-
-        mainStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(40)
-        }
-
-        [
-            firstNameTextFieldContainer,
-            secondNameTextFieldContainer,
-            mailTextFieldContainer
-        ].forEach {
-            $0.height(32)
-        }
-
-        socialStackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.centerX.equalToSuperview()
-        }
-    }
-
-    private func setupListeners() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-
-        hideKeyboardWhenTappedAround()
-    }
-
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        onKeyboardWillShow = { [weak self] keyboardSize in
+            guard let self = self else { return }
             if self.view.frame.origin.y == .zero {
                 let value = keyboardSize.minY - self.signInButton.frame.maxY
-                view.frame.origin.y -= value
+                self.view.frame.origin.y -= value
+            }
+        }
+
+        onKeyboardWillHide = { [weak self] in
+            guard let self = self else { return }
+            if self.view.frame.origin.y != .zero {
+                self.view.frame.origin.y = .zero
             }
         }
     }
 
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != .zero {
-            self.view.frame.origin.y = .zero
-        }
+    private func clearFields() {
+        mailTextFieldContainer.textField.text = nil
+        firstNameTextFieldContainer.textField.text = nil
+        secondNameTextFieldContainer.textField.text = nil
     }
 }
 

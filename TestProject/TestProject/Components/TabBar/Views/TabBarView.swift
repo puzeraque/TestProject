@@ -6,6 +6,11 @@ class TabBarView: BaseView {
 
     var onSelectedAction: TabBarActionHandler?
 
+    private let selectionView: BaseView = {
+        $0.cornerRadius(18)
+        return $0
+    }(BaseView(backgroundColor: Color.TabBar.selection))
+
     private let stackView: StackView = {
         $0.distribution = .equalSpacing
         $0.height(36)
@@ -30,13 +35,15 @@ class TabBarView: BaseView {
             tabBarItem.isSelected = tabType == selectedType
             tabBarItem.onTap { [weak self] in
                 self?.setSelected(tabType)
+                self?.setSelectionViewPosition()
             }
             tabBarItems[tabType] = tabBarItem
             stackView.addArrangedSubview(tabBarItem)
         }
 
-        addSubview(stackView)
+        addSubviews(selectionView, stackView)
         setupLayout()
+        setSelectionViewPosition(animated: false)
     }
 
     private func setupLayout() {
@@ -46,12 +53,29 @@ class TabBarView: BaseView {
         }
     }
 
+    private func setSelectionViewPosition(animated: Bool = true) {
+        guard
+            let view = tabBarItems.first(
+                where: { $0.key == self.selectedType }
+            )
+        else { return }
+        selectionView.snp.remakeConstraints {
+            $0.center.equalTo(view.value)
+            $0.size.equalTo(36)
+        }
+        guard animated else { return }
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.layoutIfNeeded()
+        }
+    }
+
     func setSelected(_ type: TabBarItemType) {
         selectedType = type
         tabBarItems.forEach { [weak self] type, view in
             guard let self = self else { return }
             view.isSelected = type == self.selectedType
         }
+        setSelectionViewPosition(animated: true)
         onSelectedAction?(type)
     }
 }

@@ -5,7 +5,7 @@ protocol LoginViewControllerInterface {
     func handle(_ action: LoginViewController.Action)
 }
 
-final class LoginViewController: UIViewController {
+final class LoginViewController: BaseViewController {
 
     private let mainStackView = StackView(axis: .vertical, spacing: 36)
     private let signInLabel = Label(
@@ -35,11 +35,11 @@ final class LoginViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setup() {
+        super.setup()
         navigationController?.setupNavigationAppearance()
         view.backgroundColor(Color.Background.main)
-        
+
         mainStackView.addArrangedSubviews(
             signInLabel,
             mailTextFieldContainer,
@@ -51,13 +51,33 @@ final class LoginViewController: UIViewController {
 
         view.addSubview(mainStackView)
 
-        setupLayout()
-        setupListeners()
-
         loginButton.setCornerRadius(16)
         loginButton.height(48)
+
+        setupHandlers()
+    }
+
+    override func setupLayout() {
+        super.setupLayout()
+        mainStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(40)
+        }
+        mailTextFieldContainer.height(32)
+        passwordTextFieldContainer.height(32)
+    }
+
+    private func setupHandlers() {
         loginButton.onTap { [weak self] in
-            self?.viewModel.handle(.login(self?.mailTextFieldContainer.text))
+            guard let self = self else { return }
+            self.viewModel.handle(
+                .login(
+                    .init(
+                        email: self.mailTextFieldContainer.text.orEmpty,
+                        password: self.passwordTextFieldContainer.text.orEmpty
+                    )
+                )
+            )
         }
 
         mailTextFieldContainer.onShouldReturn = { [weak self] in
@@ -66,51 +86,19 @@ final class LoginViewController: UIViewController {
         passwordTextFieldContainer.onShouldReturn = { [weak self] in
             self?.passwordTextFieldContainer.resignFirstResponder()
         }
-    }
 
-    private func setupLayout() {
-        mainStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(40)
-        }
-
-        [
-            mailTextFieldContainer,
-            passwordTextFieldContainer
-        ].forEach {
-            $0.height(32)
-        }
-    }
-
-    private func setupListeners() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-
-        hideKeyboardWhenTappedAround()
-    }
-
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        onKeyboardWillShow = { [weak self] keyboardSize in
+            guard let self = self else { return }
             if self.view.frame.origin.y == .zero {
                 let value = keyboardSize.minY - self.loginButton.frame.maxY
-                view.frame.origin.y -= value
+                self.view.frame.origin.y -= value
             }
         }
-    }
-
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != .zero {
-            self.view.frame.origin.y = .zero
+        onKeyboardWillHide = { [weak self] in
+            guard let self = self else { return }
+            if self.view.frame.origin.y != .zero {
+                self.view.frame.origin.y = .zero
+            }
         }
     }
 }
@@ -120,6 +108,7 @@ extension LoginViewController: LoginViewControllerInterface {
         case accountDoestExist
         case emailDoestMatch
         case validationError
+        case emptyFields
 
         var title: String {
             switch self {
@@ -129,6 +118,8 @@ extension LoginViewController: LoginViewControllerInterface {
                 return "Email doest match"
             case .validationError:
                 return "Email is not valid"
+            case .emptyFields:
+                return "Empty fields"
             }
         }
     }

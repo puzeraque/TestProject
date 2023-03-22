@@ -6,11 +6,7 @@ final class SearchTableViewCell: BaseTableViewCell {
         textColor: Color.Text.primary,
         textAlignment: .left
     )
-
-    private let separatorLine: BaseView = {
-        $0.backgroundColor(Color.TabBar.selection)
-        return $0
-    }(BaseView())
+    private let separatorLine = BaseView(backgroundColor: Color.TabBar.selection)
 
     override func setup() {
         super.setup()
