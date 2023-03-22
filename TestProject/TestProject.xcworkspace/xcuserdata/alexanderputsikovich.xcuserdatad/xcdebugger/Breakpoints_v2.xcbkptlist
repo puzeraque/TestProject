@@ -39,32 +39,48 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8D8C424C-8348-4259-BC2E-3675BD29EA6B"
+            uuid = "8D42EAF3-CF0C-4D5C-BAF0-A72E003AF744"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TestProject/Flows/Auth/SignIn/SignInViewController.swift"
+            filePath = "TestProject/Flows/ProductDetails/Views/ProductDetailsImagePickerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "112"
-            endingLineNumber = "112"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "58"
+            endingLineNumber = "58"
+            landmarkName = "configure(with:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F4F28202-209B-4AB3-A2E4-001C09EE01B8"
+            uuid = "D0D9CF9C-FF02-4622-A8B9-79A9102E1A8C"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "TestProject/Flows/Auth/SignIn/SignInViewController.swift"
+            filePath = "TestProject/Flows/ProductDetails/ProductDetailsViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
+            landmarkName = "setupHandlers()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E1BBBC80-4898-48CB-8C3A-C33C685677AB"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TestProject/Flows/Main/Coordinator/TabBarFlowCoordinator.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "mainPageViewController()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

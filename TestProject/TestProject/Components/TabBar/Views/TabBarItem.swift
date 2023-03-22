@@ -29,10 +29,6 @@ final class TabBarItem: BaseView {
     }
 
     private func updateUi() {
-        backgroundColor = isSelected
-        ? Color.TabBar.selection
-        : .clear
-
         imageView.tintColor = isSelected
         ? Color.Text.selection
         : Color.Text.secondary

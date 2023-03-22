@@ -2,13 +2,14 @@ import UIKit
 
 fileprivate enum Constant {
     static let bottomViewHeight: CGFloat = 60
+    static let topScreenInset: CGFloat = 44
 }
 
 protocol MainPageViewControllerInterface {
     func handle(_ action: MainPageViewController.Action)
 }
 
-final class MainPageViewController: UIViewController {
+final class MainPageViewController: BaseViewController {
 
     private let navigationBar = MainPageNavigationBar()
     private let searchTextFieldContainer: BaseTextFieldContainer = {
@@ -103,51 +104,57 @@ final class MainPageViewController: UIViewController {
         viewModel.handle(.updateScreen)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setup() {
+        super.setup()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor(Color.Background.main)
 
         scrollView.contentInset.bottom = Constant.bottomViewHeight + 10
         scrollView.addAndEdgesViewWithInsets(mainContainerStackView)
         mainContainerStackView.width(view.frame.width)
-
+        
         searchTextFieldContainer.addAndEdges(searchTextFieldButton)
-        searchTextFieldButton.onTap { [weak self] in
-            self?.mainPageSearchPromptView.fadeIn(then: {
-                self?.mainPageSearchPromptView.isHidden = false
-            })
-            self?.mainPageSearchPromptView.searchStarted()
-        }
         searchContainer.addAndEdgesViewWithInsets(searchTextFieldContainer, hInset: 30)
 
         view.addSubviews(navigationBar, scrollView, mainPageSearchPromptView)
 
         configureCollections()
-
-        navigationBar.onProfileTapped = { [weak self] in
-            self?.onProfileTapped?()
-        }
+        setupHandlers()
 
         mainPageSearchPromptView.isHidden = true
-        mainPageSearchPromptView.onTextChanged = { [weak self] searchText in
-            self?.viewModel.handle(.search(searchText))
-        }
     }
 
-    private func setupLayout() {
+    override func setupLayout() {
+        super.setupLayout()
         navigationBar.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(44)
+            make.top.equalToSuperview().inset(Constant.topScreenInset)
             make.leading.trailing.equalToSuperview()
         }
 
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom).inset(-20)
+            make.top.equalTo(navigationBar.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
 
         mainPageSearchPromptView.snp.makeConstraints { make in
             make.edges.equalTo(scrollView)
+        }
+    }
+
+    private func setupHandlers() {
+        navigationBar.onProfileTapped = { [weak self] in
+            self?.onProfileTapped?()
+        }
+
+        mainPageSearchPromptView.onTextChanged = { [weak self] searchText in
+            self?.viewModel.handle(.search(searchText))
+        }
+
+        searchTextFieldButton.onTap { [weak self] in
+            self?.mainPageSearchPromptView.fadeIn(then: {
+                self?.mainPageSearchPromptView.isHidden = false
+            })
+            self?.mainPageSearchPromptView.searchStarted()
         }
     }
 
@@ -160,6 +167,7 @@ final class MainPageViewController: UIViewController {
         latestCollectionHeader.configure(with: "Latest")
         flashSaleCollectionHeader.configure(with: "Flash sale")
         brandsCollectionHeader.configure(with: "Brands")
+
         mainContainerStackView.setCustomSpacing(.zero, after: latestCollectionHeader)
         mainContainerStackView.setCustomSpacing(.zero, after: flashSaleCollectionHeader)
         mainContainerStackView.setCustomSpacing(.zero, after: brandsCollectionHeader)

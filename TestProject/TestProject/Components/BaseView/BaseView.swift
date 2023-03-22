@@ -4,8 +4,9 @@ class BaseView: UIView {
 
     private var onTapped: VoidHandler?
 
-    override init(frame: CGRect) {
+    init(backgroundColor: UIColor? = nil) {
         super.init(frame: .zero)
+        self.backgroundColor = backgroundColor
         setup()
     }
 

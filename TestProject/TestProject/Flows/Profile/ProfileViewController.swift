@@ -5,7 +5,7 @@ protocol ProfileViewControllerInterface {
     func handle(_ action: ProfileViewController.Action)
 }
 
-final class ProfileViewController: UIViewController {
+final class ProfileViewController: BaseViewController {
 
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
@@ -46,8 +46,8 @@ final class ProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setup() {
+        super.setup()
         navigationController?.setNavigationBarHidden(true, animated: false)
         view.backgroundColor(Color.Background.main)
         view.addAndEdges(tableView)

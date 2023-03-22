@@ -11,13 +11,20 @@ final class LoginViewModel {
 
 extension LoginViewModel: LoginViewModelInterface {
     enum Action {
-        case login(String?)
+        case login(LoginModel)
     }
 
     func handle(_ action: Action) {
         switch action {
-        case .login(let email):
-            guard let email = email, email.isValidEmail else {
+        case .login(let model):
+            guard
+                model.email.isNotEmpty,
+                model.password.isNotEmpty
+            else {
+                view?.handle(.error(.emptyFields))
+                return
+            }
+            guard model.email.isValidEmail else {
                 view?.handle(.error(.emailDoestMatch))
                 return
             }
@@ -25,7 +32,7 @@ extension LoginViewModel: LoginViewModelInterface {
                 view?.handle(.error(.accountDoestExist))
                 return
             }
-            guard profileModel.email == email else {
+            guard profileModel.email == model.email else {
                 view?.handle(.error(.emailDoestMatch))
                 return
             }

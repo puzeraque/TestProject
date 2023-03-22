@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		70896109DD008BB51D39230E /* Pods_TestProject_TestProjectUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9EE201AB5AD6E33DD179370 /* Pods_TestProject_TestProjectUITests.framework */; };
+		750C3A0629CAFFC700744636 /* CategoruesType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C3A0529CAFFC700744636 /* CategoruesType.swift */; };
+		750C3A0929CB07CE00744636 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C3A0829CB07CE00744636 /* BaseViewController.swift */; };
+		750C3A0B29CB38D600744636 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C3A0A29CB38D600744636 /* LoginModel.swift */; };
 		752D7FBA29C1B8870093476E /* BaseTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752D7FB929C1B8870093476E /* BaseTabBarViewController.swift */; };
 		752D7FBD29C1B8C40093476E /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752D7FBC29C1B8C40093476E /* TabBarView.swift */; };
 		752D7FBF29C1B9100093476E /* TabBarItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752D7FBE29C1B9100093476E /* TabBarItemType.swift */; };
@@ -143,6 +146,9 @@
 /* Begin PBXFileReference section */
 		279C66C5E8B3A5E9FA0D55F3 /* Pods-TestProject-TestProjectUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestProject-TestProjectUITests.release.xcconfig"; path = "Target Support Files/Pods-TestProject-TestProjectUITests/Pods-TestProject-TestProjectUITests.release.xcconfig"; sourceTree = "<group>"; };
 		6359F8CF9FA23E38982433AF /* Pods_TestProjectTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TestProjectTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		750C3A0529CAFFC700744636 /* CategoruesType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoruesType.swift; sourceTree = "<group>"; };
+		750C3A0829CB07CE00744636 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		750C3A0A29CB38D600744636 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
 		752D7FB929C1B8870093476E /* BaseTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTabBarViewController.swift; sourceTree = "<group>"; };
 		752D7FBC29C1B8C40093476E /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		752D7FBE29C1B9100093476E /* TabBarItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarItemType.swift; sourceTree = "<group>"; };
@@ -295,6 +301,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		750C3A0729CAFFDB00744636 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				750C3A0529CAFFC700744636 /* CategoruesType.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		752D7FBB29C1B8B90093476E /* TabBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -581,9 +595,10 @@
 			children = (
 				7566153F29C47646004E8FEB /* MainPageAssembler.swift */,
 				7566153C29C47636004E8FEB /* MainPageViewController.swift */,
-				754DC01929CA15ED0040A0E8 /* Layout */,
 				75EF8BBE29C602ED0036BCFD /* MainPageViewModel.swift */,
 				75EF8BE629C89D460036BCFD /* DataSources */,
+				754DC01929CA15ED0040A0E8 /* Layout */,
+				750C3A0729CAFFDB00744636 /* Models */,
 				75EF8BB129C5EE3D0036BCFD /* Views */,
 			);
 			path = Controller;
@@ -642,6 +657,7 @@
 				75EF8BE229C89D1E0036BCFD /* BaseCollectionViewCell */,
 				75EF8BE329C89D280036BCFD /* Alert */,
 				75EF8BE429C89D2D0036BCFD /* Label */,
+				750C3A0829CB07CE00744636 /* BaseViewController.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -660,6 +676,7 @@
 			children = (
 				75B26B8029BF7CCB00983E97 /* LoginViewController.swift */,
 				75EF8BCC29C8856F0036BCFD /* LoginViewModel.swift */,
+				750C3A0A29CB38D600744636 /* LoginModel.swift */,
 				75B26B8229BF7E0700983E97 /* LoginViewControllerAssembler.swift */,
 			);
 			path = LogIn;
@@ -836,8 +853,8 @@
 			isa = PBXGroup;
 			children = (
 				75EF8BB629C5F86C0036BCFD /* CategoriesMainPageDataSource.swift */,
-				75EF8BBA29C5FFAA0036BCFD /* LatestMainPageDataSource.swift */,
 				75EF8BBC29C600530036BCFD /* FlashSaleMainPageDataSource.swift */,
+				75EF8BBA29C5FFAA0036BCFD /* LatestMainPageDataSource.swift */,
 			);
 			path = DataSources;
 			sourceTree = "<group>";
@@ -1156,6 +1173,7 @@
 				75B26B7929BF6D2200983E97 /* BaseTextField.swift in Sources */,
 				75D7782829C0A1C200D42374 /* UIView+exntesion.swift in Sources */,
 				7566153B29C4684E004E8FEB /* TabBarFlowCoordinator.swift in Sources */,
+				750C3A0929CB07CE00744636 /* BaseViewController.swift in Sources */,
 				7566153D29C47636004E8FEB /* MainPageViewController.swift in Sources */,
 				75D7782429C09C1100D42374 /* SettingCells.swift in Sources */,
 				75EF8BB929C5F9BD0036BCFD /* UICollections+extension.swift in Sources */,
@@ -1194,6 +1212,7 @@
 				755C159129BEFFDA0075C660 /* Coordinator.swift in Sources */,
 				75B411D229C302BA0028C006 /* SearchPrompt.swift in Sources */,
 				75B411CE29C302320028C006 /* ProductDetails.swift in Sources */,
+				750C3A0B29CB38D600744636 /* LoginModel.swift in Sources */,
 				754DC01429CA15B60040A0E8 /* FlashSaleLayout.swift in Sources */,
 				755C156129BEFF8E0075C660 /* SceneDelegate.swift in Sources */,
 				752D7FC329C1DE730093476E /* RouteService.swift in Sources */,
@@ -1205,6 +1224,7 @@
 				75B411C329C2FE040028C006 /* Environment.swift in Sources */,
 				75D7782E29C0B68200D42374 /* ProfileSegueViewCell.swift in Sources */,
 				75D7781829C0987E00D42374 /* Images.swift in Sources */,
+				750C3A0629CAFFC700744636 /* CategoruesType.swift in Sources */,
 				75B411C729C2FE370028C006 /* ParserService.swift in Sources */,
 				755C159C29BF00CE0075C660 /* UIColor+hex.swift in Sources */,
 				755C15AC29BF03EF0075C660 /* AppFlowCordinator.swift in Sources */,

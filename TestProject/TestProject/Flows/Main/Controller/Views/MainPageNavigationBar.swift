@@ -12,54 +12,38 @@ final class MainPageNavigationBar: BaseView {
         $0.clipsToBounds = true
         return $0
     }(BaseImageView())
-
     private let locationLabel = Label(
         text: "Location",
         font: Fonts.caption2,
         textColor: Color.Text.primary,
         textAlignment: .left
     )
-
     private let chevronImageView: BaseImageView = {
         $0.tintColor = Color.Content.primary
         $0.size(.init(width: 6, height: 4))
         return $0
     }(BaseImageView(image: Image.Main.chevronDown.image))
-
     private let brandLabel = Label(font: Fonts.h4Bold)
+    private let locationStackView = StackView(axis: .horizontal, spacing: 4)
+    private let profileImageViewContainer = BaseView()
+    private lazy var stackView = StackView(
+        axis: .vertical,
+        spacing: 6,
+        arrangedSubviews: [profileImageViewContainer, locationStackView]
+    )
 
     var onProfileTapped: VoidHandler?
 
     override func setup() {
         super.setup()
-        imageView.onTap {
-            AlertService.center.show(.base(title: "Menu tapped"))
-        }
-        profileImageView.onTap { [weak self] in
-            self?.onProfileTapped?()
-        }
-
-        let profileImageViewContainer = BaseView()
         profileImageViewContainer.height(30)
         profileImageViewContainer.addSubview(profileImageView)
-        profileImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-
-        let locationStackView = StackView(axis: .horizontal, spacing: 4)
 
         let imageContainer = BaseView()
-
         imageContainer.width(6)
         imageContainer.putInCenter(chevronImageView)
 
         locationStackView.addArrangedSubviews(locationLabel, imageContainer)
-
-        let stackView = StackView(
-            axis: .vertical,
-            spacing: 6,
-            arrangedSubviews: [profileImageViewContainer, locationStackView]
-        )
 
         brandLabel.changeColorOfPartOfTheText(
             fullText: "Trade by bata",
@@ -67,6 +51,15 @@ final class MainPageNavigationBar: BaseView {
         )
 
         addSubviews(imageView, stackView, brandLabel)
+
+        setupLayout()
+        setupHandlers()
+    }
+
+    private func setupLayout() {
+        profileImageView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
 
         imageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
@@ -82,12 +75,24 @@ final class MainPageNavigationBar: BaseView {
             make.top.bottom.trailing.equalToSuperview().inset(16)
         }
     }
+
+    private func setupHandlers() {
+        imageView.onTap {
+            AlertService.center.show(.base(title: "Menu tapped"))
+        }
+        profileImageView.onTap { [weak self] in
+            self?.onProfileTapped?()
+        }
+    }
 }
 
 extension MainPageNavigationBar: Configurable {
     typealias Model = UIImage?
 
     func configure(with model: UIImage?) {
-        profileImageView.image = model
+        profileImageView.image = model ?? Image.TabBar.user.image
+        if model == nil {
+            profileImageView.tintColor = Color.Content.primary
+        }
     }
 }
