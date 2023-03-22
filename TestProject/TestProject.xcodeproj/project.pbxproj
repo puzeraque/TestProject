@@ -309,6 +309,22 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		750C3A0C29CB405400744636 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				750C3A0A29CB38D600744636 /* LoginModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		750C3A0D29CB406800744636 /* BaseViewController */ = {
+			isa = PBXGroup;
+			children = (
+				750C3A0829CB07CE00744636 /* BaseViewController.swift */,
+			);
+			path = BaseViewController;
+			sourceTree = "<group>";
+		};
 		752D7FBB29C1B8B90093476E /* TabBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -657,7 +673,7 @@
 				75EF8BE229C89D1E0036BCFD /* BaseCollectionViewCell */,
 				75EF8BE329C89D280036BCFD /* Alert */,
 				75EF8BE429C89D2D0036BCFD /* Label */,
-				750C3A0829CB07CE00744636 /* BaseViewController.swift */,
+				750C3A0D29CB406800744636 /* BaseViewController */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -675,9 +691,9 @@
 			isa = PBXGroup;
 			children = (
 				75B26B8029BF7CCB00983E97 /* LoginViewController.swift */,
-				75EF8BCC29C8856F0036BCFD /* LoginViewModel.swift */,
-				750C3A0A29CB38D600744636 /* LoginModel.swift */,
 				75B26B8229BF7E0700983E97 /* LoginViewControllerAssembler.swift */,
+				75EF8BCC29C8856F0036BCFD /* LoginViewModel.swift */,
+				750C3A0C29CB405400744636 /* Models */,
 			);
 			path = LogIn;
 			sourceTree = "<group>";
