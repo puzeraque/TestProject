@@ -493,7 +493,6 @@
 				755C15AD29BF06F50075C660 /* Main */,
 				755C15B029BF070E0075C660 /* Auth */,
 				75D7782929C0A95900D42374 /* Profile */,
-				75EF8BE729C89D6B0036BCFD /* Model */,
 				7566152829C45D0D004E8FEB /* ProductDetails */,
 			);
 			path = Flows;
@@ -766,6 +765,7 @@
 		75D7782929C0A95900D42374 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				75EF8BE729C89D6B0036BCFD /* Model */,
 				75D7782A29C0A96000D42374 /* View */,
 				75D7781B29C099A700D42374 /* ProfileViewController.swift */,
 				75EF8BC629C839970036BCFD /* ProfileViewModel.swift */,
